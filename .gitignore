@@ -1,0 +1,14 @@
+# Editors
+.vscode/
+.vs/
+.idea/
+
+# Byte-compiled / optimized / DLL files
+__pycache__/
+
+# private data
+*.session
+*.session-journal
+main_base.db
+api_config.py
+downloads/
