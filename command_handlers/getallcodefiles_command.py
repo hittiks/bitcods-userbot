@@ -10,12 +10,12 @@ from pyrogram.types.messages_and_media.message import Message
 
 HELP_VAR = {
     "ru": {
-        ".getallcodefiles": "<code>.getallcodefiles</code>  —  получение всех файлов с кодом и тд (используйте только в чате \"Избранное\","+
+        ".getfiles": "<code>.getfiles</code>  —  получение всех файлов с кодом и тд (используй только в чате \"Избранное\","+
         " так как файлы с аккаунтом и личными данными тоже будут отправлены)\n"+
                 "==============================\n<u>Параметры</u>:\n    ~~Не имеет~~"
     },
     "en": {
-        ".getallcodefiles": "<code>.getallcodefiles</code>  —  getting all files with code and etc (use only in chat \"Saved messages\","+
+        ".getfiles": "<code>.getfiles</code>  —  getting all files with code etc (use only in chat \"Saved messages\","+
         " because files with accound and private data also will be send)\n"+
                 "==============================\n<u>Params</u>:\n    ~~Doesn't have~~"
     }
