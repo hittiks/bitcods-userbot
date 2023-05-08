@@ -193,6 +193,8 @@ async def chat_command_func(cl: Client, msg: Message):
                     "payment sent me": 0,
                     "requested user": 0,
                     "requested chat/channel": 0,
+                    "web view data sent": 0,
+                    "web view data sent me": 0,
                     MessageServiceType.PINNED_MESSAGE: 0,
                     MessageServiceType.NEW_CHAT_MEMBERS: 0,
                     MessageServiceType.LEFT_CHAT_MEMBERS: 0,
@@ -299,6 +301,12 @@ async def chat_command_func(cl: Client, msg: Message):
                 elif isinstance(__try_to_get_attr(m, "action"), types.MessageActionRequestedPeer):
                     sum["service"]["_"]+=1
                     sum["service"]["requested chat/channel"]+=1
+                elif isinstance(__try_to_get_attr(m, "action"), types.MessageActionWebViewDataSent):
+                    sum["service"]["_"]+=1
+                    sum["service"]["web view data sent"]+=1
+                elif isinstance(__try_to_get_attr(m, "action"), types.MessageActionWebViewDataSentMe):
+                    sum["service"]["_"]+=1
+                    sum["service"]["web view data sent me"]+=1
                 elif isinstance(__try_to_get_attr(m, "media"), types.MessageMediaInvoice) and __try_to_get_attr(m.media, "extended_media"):
                     sum["media"]["_"]+=1
                     sum["media"]["media invoice"]+=1
