@@ -1,3 +1,4 @@
+import config
 from on_start import apps
 
 from pyrogram import filters
@@ -8,12 +9,31 @@ from pyrogram.types.messages_and_media.message import Message
 
 
 HELP_VAR = {
+    "ru": {
         ".screenshot": "<code>.screenshot</code>  —  создание сервисного сообщения о сделанном скриншоте\n"+
                 "==============================\n<u>Параметры</u>:\n    ~~Не имеет~~"
+    },
+    "en": {
+        ".screenshot": "<code>.screenshot</code>  —  creating a service message about the screenshot taken\n"+
+                "==============================\n<u>Params</u>:\n    ~~Doesn't have~~"
+    }
 }
 
 
-# Создание сервисного сообщения о сделанном скриншоте
+PHRASES_VAR = {
+    "ru": {
+        "<empty>": "<empty>"
+    },
+    "en": {
+        "<empty>": "<empty>"
+    }
+}
+
+
+def get_phrase(key: str):
+    return PHRASES_VAR.get(config.PHRASES_LANGUAGE, PHRASES_VAR.get("en", {}))[key]
+
+
 async def screenshot_command_func(cl: Client, msg: Message):
     await msg.delete()
     

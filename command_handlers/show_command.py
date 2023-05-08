@@ -1,4 +1,5 @@
 import os
+import config
 import mimetypes
 mimetypes.init()
 from utils import send_temp_message
@@ -11,25 +12,51 @@ from pyrogram.types.messages_and_media.message import Message
 
 
 HELP_VAR = {
-        ".show": "<code>.show</code>  —  получение временной фотки/видоса в постоянное распоряжение (отправляется в тот же чат)\n"+
+    "ru": {
+        ".show": "<code>.show</code>  —  получение временного фото/видео в постоянное распоряжение (отправляется в тот же чат)\n"+
                 "__**Обязательно отправлять ответом на целевое сообщение**__\n"+
                 "==============================\n<u>Параметры</u>:\n    ~~Не имеет~~"
+    },
+    "en": {
+        ".show": "<code>.show</code>  —  getting a temporary photo/video as a permanent feature (sent to the same chat)\n"+
+                "__**Required to send as a reply to the target message**__\n"+
+                "==============================\n<u>Params</u>:\n    ~~Doesn't have~~"
+    }
 }
 
 
-# Получение временной фотки/видоса в постоянное распоряжение
+PHRASES_VAR = {
+    "ru": {
+        "require_reply": "Команда должна быть ответом на сообщение",
+        "unknown_media_type": "Тип медиа не распознан",
+        "media_not_photo_or_video": "Медиа не является фото- или видеофайлом ('{0}')",
+        "has_not_media": "Сообщение не содержит медиа для загрузки"
+    },
+    "en": {
+        "require_reply": "The command must be a reply to a message",
+        "unknown_media_type": "Media type not recognized",
+        "media_not_photo_or_video": "Media is not photo or video file ('{0}')",
+        "has_not_media": "Message has not media for loading"
+    }
+}
+
+
+def get_phrase(key: str):
+    return PHRASES_VAR.get(config.PHRASES_LANGUAGE, PHRASES_VAR.get("en", {}))[key]
+
+
 async def show_command_func(cl: Client, msg: Message):
     await msg.delete()
 
     if not msg.reply_to_message:
-        await send_temp_message(cl, msg.chat.id, "Команда должна быть ответом на сообщение")
+        await send_temp_message(cl, msg.chat.id, get_phrase("require_reply"))
         return
     
     try:
         path = await cl.download_media(msg.reply_to_message)
         mediatype = mimetypes.guess_type(path)[0]
         if not mediatype:
-            await send_temp_message(cl, msg.chat.id, "Тип медиа не распознан")
+            await send_temp_message(cl, msg.chat.id, get_phrase("unknown_media_type"))
             return
 
         mt = mediatype.split("/")[0]
@@ -42,10 +69,10 @@ async def show_command_func(cl: Client, msg: Message):
             os.remove(path)
             os.removedirs("downloads")
         else:
-            await send_temp_message(cl, msg.chat.id, f"Медиа не является фото- или видеофайлом ('{mediatype}')")
+            await send_temp_message(cl, msg.chat.id, get_phrase("media_not_photo_or_video").format(mediatype))
             return
     except ValueError:
-        await send_temp_message(cl, msg.chat.id, "Сообщение не содержит медиа для загрузки")
+        await send_temp_message(cl, msg.chat.id, get_phrase("has_not_media"))
         return
 
 

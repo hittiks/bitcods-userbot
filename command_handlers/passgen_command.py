@@ -1,4 +1,5 @@
 import random
+import config
 from on_start import apps
 from logger.logger import log, LogMode
 
@@ -10,14 +11,37 @@ from pyrogram.types.messages_and_media.message import Message
 
 
 HELP_VAR = {
+    "ru": {
         ".passgen": "<code>.passgen</code>  —  генератор паролей\n"+
                 "==============================\n<u>Параметры</u>:\n"+
-                        "    __**Первый параметр:**__ (необязательно) - количество знаков в пароле (8 по умолчанию)\n"+
-                        "    __**Второй параметр:**__ (необязательно) - режим работы: 1 - только цифры; 2 - цифры и буквы; 3 - цифры, буквы и символы (1 по умолчанию)"
+                        "    __**Первый параметр:**__ (необязательно) - количество знаков в пароле, она же длинна (8 по умолчанию)\n"+
+                        "    __**Второй параметр:**__ (необязательно) - режим работы: 1 - только цифры, 2 - цифры и буквы,"+
+                                " 3 - цифры, буквы и специальные символы (1 по умолчанию)"
+    },
+    "en": {
+        ".passgen": "<code>.passgen</code>  —  passwords generator\n"+
+                "==============================\n<u>Params</u>:\n"+
+                        "    __**First param:**__ (not required) - num of symbols in password also known as length (8 by default)\n"+
+                        "    __**Second param:**__ (not required) - working mode: 1 - only numbers, 2 - numbers and letters,"+
+                                " 3 - numbers, letters and special symbols (1 by default)"
+    }
 }
 
 
-# Генератор паролей
+PHRASES_VAR = {
+    "ru": {
+        "<empty>": "<empty>"
+    },
+    "en": {
+        "<empty>": "<empty>"
+    }
+}
+
+
+def get_phrase(key: str):
+    return PHRASES_VAR.get(config.PHRASES_LANGUAGE, PHRASES_VAR.get("en", {}))[key]
+
+
 async def passgen_command_func(cl: Client, msg: Message):
     await msg.delete()
     
@@ -43,12 +67,12 @@ async def passgen_command_func(cl: Client, msg: Message):
         symbols = list(alph[1])
 
     try:
-        tbp="" # to be printed
+        password=""
         for _ in range(0, number):
             random.shuffle(symbols)
-            tbp+=symbols[0]
+            password += symbols[0]
         
-        await cl.send_message(msg.chat.id, tbp, parse_mode=ParseMode.DISABLED)
+        await cl.send_message(msg.chat.id, password, parse_mode=ParseMode.DISABLED)
 
     except Exception as e:
         log(f"----------'PASSGEN' HAVE GOT ERROR: {e}----------", LogMode.ERROR)

@@ -9,12 +9,31 @@ from pyrogram.types.messages_and_media.message import Message
 
 
 HELP_VAR = {
-        ".stop": "<code>.stop</code>  —  команда остановки этого скрипта\n"+
+    "ru": {
+        ".stop": "<code>.stop</code>  —  команда остановки этой программы\n"+
                 "==============================\n<u>Параметры</u>:\n    ~~Не имеет~~"
+    },
+    "en": {
+        ".stop": "<code>.stop</code>  —  command to stop this program\n"+
+                "==============================\n<u>Params</u>:\n    ~~Doesn't have~~"
+    }
 }
 
 
-# Команда остановки скрипта
+PHRASES_VAR = {
+    "ru": {
+        "<empty>": "<empty>"
+    },
+    "en": {
+        "<empty>": "<empty>"
+    }
+}
+
+
+def get_phrase(key: str):
+    return PHRASES_VAR.get(config.PHRASES_LANGUAGE, PHRASES_VAR.get("en", {}))[key]
+
+
 async def stop_command_func(cl: Client, msg: Message):
     await msg.delete()
     config.IS_STOP = True

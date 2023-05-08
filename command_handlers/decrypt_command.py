@@ -13,13 +13,37 @@ from pyrogram.types.messages_and_media.message import Message
 
 
 HELP_VAR = {
-        ".decrypt": "<code>.decrypt</code>  —  типа type 2.0, имитация расшифровки сообщения\n"+
+    "ru": {
+        ".decrypt": "<code>.decrypt</code>  —  имитация расшифровки текстового сообщения\n"+
                 "==============================\n<u>Параметры</u>:\n"+
                         "    __**Первый параметр:**__ (обязательно) - целевой текст для имитации его расшифровки"
+    },
+    "en": {
+        ".decrypt": "<code>.decrypt</code>  —  imitation of decryption a text message\n"+
+                "==============================\n<u>Params</u>:\n"+
+                        "    __**First param:**__ (required) - target text for imitation of him decryption"
+    }
 }
 
 
-# Типа type 2.0, имитация расшифровки сообщения
+PHRASES_VAR = {
+    "ru": {
+        "require_param_as_target_text": "Требуется параметр в виде целевого текста",
+        "start_decrypt": "Начинаю расшифровку послания...",
+        "decrypt_in_process": "Расшифровка в процессе"
+    },
+    "en": {
+        "require_param_as_target_text": "Require param as a target text",
+        "start_decrypt": "Start decrypting message...",
+        "decrypt_in_process": "Decrypting in process"
+    }
+}
+
+
+def get_phrase(key: str):
+    return PHRASES_VAR.get(config.PHRASES_LANGUAGE, PHRASES_VAR.get("en", {}))[key]
+
+
 async def decrypt_command_func(cl: Client, msg: Message):
     await msg.delete()
 
@@ -28,7 +52,7 @@ async def decrypt_command_func(cl: Client, msg: Message):
         if not target_text:
             raise ValueError
     except:
-        await send_temp_message(cl, msg.chat.id, "Требуется параметр в виде целевого текста")
+        await send_temp_message(cl, msg.chat.id, get_phrase("require_param_as_target_text"))
         return
 
     target_symbols = list(target_text)
@@ -40,7 +64,7 @@ async def decrypt_command_func(cl: Client, msg: Message):
     num_of_dot = 1
     counter = 0
 
-    mess = await cl.send_message(msg.chat.id, "Начинаю расшифровку послания...")
+    mess = await cl.send_message(msg.chat.id, get_phrase("start_decrypt"))
     await asyncio.sleep(2)
     while(perc < 100):
         if config.IS_STOP:
@@ -56,7 +80,7 @@ async def decrypt_command_func(cl: Client, msg: Message):
                 text_now = text_now[:ind] + target_symbols[ind] + text_now[ind+1:]
 
 
-            text = "Расшифровка в процессе" + "."*num_of_dot + "\n" + "| "*int(perc/10) + "\n" + str(perc) + "%\n" + text_now
+            text = get_phrase("decrypt_in_process") + "."*num_of_dot + "\n" + "| "*int(perc/10) + "\n" + str(perc) + "%\n" + text_now
             await mess.edit_text(text, ParseMode.DISABLED)
             num_of_dot+=1
             if num_of_dot>3:

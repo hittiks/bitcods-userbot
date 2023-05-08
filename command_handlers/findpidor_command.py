@@ -11,17 +11,38 @@ from pyrogram.types.messages_and_media.message import Message
 
 
 HELP_VAR = {
+    "ru": {
         ".findpidor": "<code>.findpidor</code>  —  команда \"поиска\" пидора, любимой и подобных\n"+
                 "==============================\n<u>Параметры</u>:\n    ~~Не имеет~~"
+    },
+    "en": {
+        ".findpidor": "<code>.findpidor</code>  —  command of \"finding\" for a pidor, lover and the like\n"+
+                "==============================\n<u>Params</u>:\n    ~~Doesn't have~~"
+    }
 }
 
 
-# Команда "поиска" пидора, любимой и подобных
+PHRASES_VAR = {
+    "ru": {
+        "<empty>": "<empty>"
+    },
+    "en": {
+        "<empty>": "<empty>"
+    }
+}
+
+
+def get_phrase(key: str):
+    return PHRASES_VAR.get(config.PHRASES_LANGUAGE, PHRASES_VAR.get("en", {}))[key]
+
+
 async def findpidor_command_func(cl: Client, msg: Message):
     await msg.delete()
     
     perc = 0
     num_of_dot = 1
+
+    # edit it as you wish
     texts = [
         "Поиск пидора в процессе|Пидор обнаружен!",
         "Поиск конча в процессе|Конч обнаружен!",

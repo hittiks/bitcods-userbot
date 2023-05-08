@@ -10,20 +10,40 @@ from pyrogram.types.messages_and_media.message import Message
 
 
 HELP_VAR = {
-        ".type": "<code>.type</code>  —  команда красивой печати\n"+
+    "ru": {
+        ".type": "<code>.type</code>  —  команда красивой печати (попробуй, чтобы понять)\n"+
                 "==============================\n<u>Параметры</u>:\n"+
                         "    __**Первый параметр:**__ (обязательно) - текст для печати"
+    },
+    "en": {
+        ".type": "<code>.type</code>  —  command for beautiful print (try it to understand)\n"+
+                "==============================\n<u>Params</u>:\n"+
+                        "    __**First param:**__ (required) - text for print"
+    }
 }
 
 
-# Команда красивой печати
+PHRASES_VAR = {
+    "ru": {
+        "<empty>": "<empty>"
+    },
+    "en": {
+        "<empty>": "<empty>"
+    }
+}
+
+
+def get_phrase(key: str):
+    return PHRASES_VAR.get(config.PHRASES_LANGUAGE, PHRASES_VAR.get("en", {}))[key]
+
+
 async def type_command_func(cl: Client, msg: Message):
     orig_text = msg.text.split(".type ", maxsplit=1)[1]
     text = orig_text
     tbp = "" # to be printed
     typing_symbol = "▒"
 
-    while(tbp != orig_text):
+    while tbp != orig_text:
         if config.IS_STOP:
             return
         

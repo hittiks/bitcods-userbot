@@ -1,3 +1,4 @@
+import config
 import asyncio
 from tqdm import tqdm
 from utils import send_temp_message
@@ -15,11 +16,35 @@ from pyrogram.types.messages_and_media.message import Message
 
 
 HELP_VAR = {
+    "ru":{
         ".chat": "<code>.chat</code>  —  статистика сообщений в чате или лс\n"+
                 "==============================\n<u>Параметры</u>:\n"+
                         "    __**Первый параметр:**__ (обязательно) - режим отображения результатов: строго 0 или 1, где 0 - это вывод без \"пустых пунктов\","+
-                        " а 1 сответственно - с ними"
+                                " а 1 сответственно - с ними"
+    },
+    "en": {
+        ".chat": "<code>.chat</code>  —  statistics of messages in group or private chat\n"+
+                "==============================\n<u>Params</u>:\n"+
+                        "    __**First param:**__ (required) - results showing mode: strictly 0 or 1, where 0 - its showing without \"empty items\","+
+                                " and 1 - with it"
+    }
 }
+
+
+PHRASES_VAR = {
+    "ru": {
+        "require_param_as_num": "Требуется параметр в виде числа (строго 0 или 1)",
+        "undefined": "Неопределённое сообщение"
+    },
+    "en": {
+        "require_param_as_num": "Require param as a num (strictly 0 or 1)",
+        "undefined": "Undefined message"
+    }
+}
+
+
+def get_phrase(key: str):
+    return PHRASES_VAR.get(config.PHRASES_LANGUAGE, PHRASES_VAR.get("en", {}))[key]
 
 
 async def __gm(
@@ -102,7 +127,6 @@ async def __get_chat_history_count(cl: Client, chat_id: int):
         return r1.count
 
 
-# Статистика сообщений в чате или лс
 async def chat_command_func(cl: Client, msg: Message):
     await msg.delete()
 
@@ -111,7 +135,7 @@ async def chat_command_func(cl: Client, msg: Message):
         if mode not in [0, 1]:
             raise ValueError
     except (IndexError, ValueError):
-        await send_temp_message(cl, msg.chat.id, "Требуется параметр в виде числа (строго 0 или 1)")
+        await send_temp_message(cl, msg.chat.id, get_phrase("require_param_as_num"))
         return
 
     data = {
@@ -292,7 +316,7 @@ async def chat_command_func(cl: Client, msg: Message):
                     sum["media"]["unsupported"]+=1
                 else:
                     data["all (counted by tg)"]["undefined"]+=1
-                    await cl.send_message(msg.chat.id, "undefined", reply_to_message_id=list1.id)
+                    await cl.send_message(msg.chat.id, get_phrase("undefined"), reply_to_message_id=list1.id)
         except Exception as e:
             log(f"----------'CHAT' HAVE GOT ERROR: {e}----------", LogMode.ERROR)
         await asyncio.sleep(0.01)

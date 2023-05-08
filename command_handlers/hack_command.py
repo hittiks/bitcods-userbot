@@ -11,12 +11,37 @@ from pyrogram.types.messages_and_media.message import Message
 
 
 HELP_VAR = {
+    "ru": {
         ".hack": "<code>.hack</code>  —  команда \"взлома\" пентагона\n"+
                 "==============================\n<u>Параметры</u>:\n    ~~Не имеет~~"
+    },
+    "en": {
+        ".hack": "<code>.hack</code>  —  command to \"hack\" pentagon\n"+
+                "==============================\n<u>Params</u>:\n    ~~Doesn't have~~"
+    }
 }
 
 
-# Команда "взлома" пентагона
+PHRASES_VAR = {
+    "ru": {
+        "hack_in_process": "👮‍ Взлом пентагона в процессе ...",
+        "successfully_hacked": "🟢 Пентагон успешно взломан!",
+        "find_in_process": "👽 Поиск секретных данных об НЛО ...",
+        "successfully_finded": "🦖 Найдены данные о существовании динозавров на земле!"
+    },
+    "en": {
+        "hack_in_process": "👮‍ Hacking pentagon in process ...",
+        "successfully_hacked": "🟢 Pentagon successfully hacked!",
+        "find_in_process": "👽 Finding secret info about UFO ...",
+        "successfully_finded": "🦖 Finded info about the existence of dinosaurs on earth!"
+    }
+}
+
+
+def get_phrase(key: str):
+    return PHRASES_VAR.get(config.PHRASES_LANGUAGE, PHRASES_VAR.get("en", {}))[key]
+
+
 async def hack_command_func(cl: Client, msg: Message):
     perc = 0
 
@@ -25,7 +50,7 @@ async def hack_command_func(cl: Client, msg: Message):
             return
         
         try:
-            text = "👮‍ Взлом пентагона в процессе ..." + str(perc) + "%"
+            text = get_phrase("hack_in_process") + str(perc) + "%"
             await msg.edit(text)
 
             perc += random.randint(1, 3)
@@ -34,10 +59,10 @@ async def hack_command_func(cl: Client, msg: Message):
         except FloodWait as e:
             await asyncio.sleep(e.value)
 
-    await msg.edit("🟢 Пентагон успешно взломан!")
+    await msg.edit(get_phrase("successfully_hacked"))
     await asyncio.sleep(3)
 
-    await msg.edit("👽 Поиск секретных данных об НЛО ...")
+    await msg.edit(get_phrase("find_in_process"))
     perc = 0
 
     while(perc < 100):
@@ -45,7 +70,7 @@ async def hack_command_func(cl: Client, msg: Message):
             return
         
         try:
-            text = "👽 Поиск секретных данных об НЛО ..." + str(perc) + "%"
+            text = get_phrase("find_in_process") + str(perc) + "%"
             await msg.edit(text)
 
             perc += random.randint(1, 5)
@@ -54,7 +79,7 @@ async def hack_command_func(cl: Client, msg: Message):
         except FloodWait as e:
             await asyncio.sleep(e.value)
 
-    await msg.edit("🦖 Найдены данные о существовании динозавров на земле!")
+    await msg.edit(get_phrase("successfully_finded"))
 
 
 for a in apps:

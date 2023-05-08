@@ -1,3 +1,4 @@
+import config
 import asyncio
 from tqdm import tqdm
 from utils import send_temp_message
@@ -17,12 +18,45 @@ from pyrogram.types.messages_and_media.message import Message
 
 
 HELP_VAR = {
+    "ru": {
         ".channel": "<code>.channel</code>  —  статистика постов в канале по его айди\n"+
                 "==============================\n<u>Параметры</u>:\n"+
                         "    __**Первый параметр:**__ (обязательно) - айди целевого канала\n"+
                         "    __**Второй параметр:**__ (обязательно) - режим отображения результатов: строго 0 или 1, где 0 - это вывод без \"пустых пунктов\","+
-                        " а 1 сответственно - с ними"
+                                " а 1 сответственно - с ними"
+    },
+    "en": {
+        ".channel": "<code>.channel</code>  —  statistics of posts from channel by him id\n"+
+                "==============================\n<u>Params</u>:\n"+
+                        "    __**First param:**__ (required) - id of target channel\n"+
+                        "    __**Second param:**__ (required) - results showing mode: strictly 0 or 1, where 0 - its showing without \"empty items\","+
+                                " and 1 - with it"
+    }
 }
+
+
+PHRASES_VAR = {
+    "ru": {
+        "require_first_param_as_num": "Требуется первый параметр в виде числа",
+        "require_second_param_as_num": "Требуется второй параметр в виде числа (строго 0 или 1)",
+        "get_peer_id_invalid": "Получена ошибка PeerIdInvalid при попытке получить канал",
+        "forbidden_by_private": "Канал недоступен из-за приватности",
+        "id_not_channel": "Айди не принадлежит каналу",
+        "undefined": "Неопределённое сообщение с айди {0}"
+    },
+    "en": {
+        "require_first_param_as_num": "Require first param as number",
+        "require_second_param_as_num": "Require second param as number (strictly 0 or 1)",
+        "get_peer_id_invalid": "Get error PeerIdInvalid when trying get channel",
+        "forbidden_by_private": "Channel forbidden by private",
+        "id_not_channel": "Id not belong to channel",
+        "undefined": "Undefined message with id {0}"
+    }
+}
+
+
+def get_phrase(key: str):
+    return PHRASES_VAR.get(config.PHRASES_LANGUAGE, PHRASES_VAR.get("en", {}))[key]
 
 
 async def __gm(
@@ -67,14 +101,13 @@ def __try_to_get_attr(obj: object, attr: str, default = None):
         return default
 
 
-# Статистика постов в канале по его айди
 async def channel_command_func(cl: Client, msg: Message):
     await msg.delete()
     
     try:
         channel_id = int(msg.text.split(" ")[1])
     except (IndexError, ValueError):
-        await send_temp_message(cl, msg.chat.id, "Требуется первый параметр в виде числа")
+        await send_temp_message(cl, msg.chat.id, get_phrase("require_first_param_as_num"))
         return
 
     try:
@@ -82,20 +115,20 @@ async def channel_command_func(cl: Client, msg: Message):
         if mode not in [0, 1]:
             raise ValueError
     except (IndexError, ValueError):
-        await send_temp_message(cl, msg.chat.id, "Требуется второй параметр в виде числа (строго 0 или 1)")
+        await send_temp_message(cl, msg.chat.id, get_phrase("require_second_param_as_num"))
         return
 
     try:
         ch = await cl.get_chat(channel_id)
     except exceptions.bad_request_400.PeerIdInvalid:
-        await send_temp_message(cl, msg.chat.id, "Получена ошибка PeerIdInvalid при попытке получить канал")
+        await send_temp_message(cl, msg.chat.id, get_phrase("get_peer_id_invalid"))
         return
     except exceptions.bad_request_400.ChannelPrivate:
-        await send_temp_message(cl, msg.chat.id, "Канал недоступен из-за приватности")
+        await send_temp_message(cl, msg.chat.id, get_phrase("forbidden_by_private"))
         return
     else:
         if ch.type != ChatType.CHANNEL:
-            await send_temp_message(cl, msg.chat.id, "Айди не принадлежит каналу")
+            await send_temp_message(cl, msg.chat.id, get_phrase("id_not_channel"))
             return
 
 
@@ -195,7 +228,7 @@ async def channel_command_func(cl: Client, msg: Message):
                     sum["media"]["unsupported"]+=1
                 else:
                     data["all posts (counted by tg)"]["undefined"]+=1
-                    await cl.send_message(msg.chat.id, f"undefined message with id {list1.id}")
+                    await cl.send_message(msg.chat.id, get_phrase("undefined").format(list1.id))
         except Exception as e:
             log(f"----------'CHANNEL' HAVE GOT ERROR: {e}----------", LogMode.ERROR)
         await asyncio.sleep(0.01)
