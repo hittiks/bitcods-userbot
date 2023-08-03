@@ -16,10 +16,10 @@ class LogMode(Enum):
 
 def log(text: str, mode: LogMode) -> None:
     if config.LOG_TO_FILE:
-        if not Path("../userbot-logs").exists():
+        if not Path("../bitcods-userbot_logs").exists():
             Path("../userbot-logs").mkdir()
 
-        with open(f"../userbot-logs/log_{datetime.now().date()}.txt", "a", encoding="utf-8") as f:
+        with open(f"../bitcods-userbot_logs/log_{datetime.now().date()}.txt", "a", encoding="utf-8") as f:
             if config.LOGS_IS_COLORED:
                 f.write(colored(text, color=mode.value) + "\n")
             else:

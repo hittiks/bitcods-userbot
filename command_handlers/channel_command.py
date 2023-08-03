@@ -1,3 +1,4 @@
+import time
 import config
 import asyncio
 from tqdm import tqdm
@@ -103,6 +104,8 @@ def __try_to_get_attr(obj: object, attr: str, default = None):
 
 async def channel_command_func(cl: Client, msg: Message):
     await msg.delete()
+
+    start_time = time.time()
     
     try:
         channel_id = int(msg.text.split(" ")[1])
@@ -251,7 +254,7 @@ async def channel_command_func(cl: Client, msg: Message):
                         s += f"{tab}{' '.join(k.name.lower().split('_'))}: {v}\n"
         return s
 
-    await cl.send_message(msg.chat.id, pretty(data).strip())
+    await cl.send_message(msg.chat.id, pretty(data).strip() + f"\n\nTime to count: {time.time() - start_time:.2f} s")
 
 
 for a in apps:

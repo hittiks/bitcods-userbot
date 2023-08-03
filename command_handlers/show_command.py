@@ -13,12 +13,12 @@ from pyrogram.types.messages_and_media.message import Message
 
 HELP_VAR = {
     "ru": {
-        ".show": "<code>.show</code>  —  получение временного фото/видео в постоянное распоряжение (отправляется в тот же чат)\n"+
+        ".show": "<code>.show</code>  —  получение временного фото/видео в постоянное распоряжение (отправляется в чат Избранное)\n"+
                 "__**Обязательно отправлять ответом на целевое сообщение**__\n"+
                 "==============================\n<u>Параметры</u>:\n    ~~Не имеет~~"
     },
     "en": {
-        ".show": "<code>.show</code>  —  getting a temporary photo/video as a permanent feature (sent to the same chat)\n"+
+        ".show": "<code>.show</code>  —  getting a temporary photo/video as a permanent feature (sent to the chat Saved messages)\n"+
                 "__**Required to send as a reply to the target message**__\n"+
                 "==============================\n<u>Params</u>:\n    ~~Doesn't have~~"
     }
@@ -49,30 +49,30 @@ async def show_command_func(cl: Client, msg: Message):
     await msg.delete()
 
     if not msg.reply_to_message:
-        await send_temp_message(cl, msg.chat.id, get_phrase("require_reply"))
+        await send_temp_message(cl, cl.me.id, get_phrase("require_reply"), 10)
         return
     
     try:
         path = await cl.download_media(msg.reply_to_message)
         mediatype = mimetypes.guess_type(path)[0]
         if not mediatype:
-            await send_temp_message(cl, msg.chat.id, get_phrase("unknown_media_type"))
+            await send_temp_message(cl, cl.me.id, get_phrase("unknown_media_type"), 10)
             return
 
         mt = mediatype.split("/")[0]
         if mt == "image":
-            await cl.send_photo(msg.chat.id, path)
+            await cl.send_photo(cl.me.id, path)
             os.remove(path)
             os.removedirs("downloads")
         elif mt == "video":
-            await cl.send_video(msg.chat.id, path)
+            await cl.send_video(cl.me.id, path)
             os.remove(path)
             os.removedirs("downloads")
         else:
-            await send_temp_message(cl, msg.chat.id, get_phrase("media_not_photo_or_video").format(mediatype))
+            await send_temp_message(cl, cl.me.id, get_phrase("media_not_photo_or_video").format(mediatype), 10)
             return
     except ValueError:
-        await send_temp_message(cl, msg.chat.id, get_phrase("has_not_media"))
+        await send_temp_message(cl, cl.me.id, get_phrase("has_not_media"), 10)
         return
 
 

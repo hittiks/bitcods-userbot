@@ -1,3 +1,4 @@
+import time
 import config
 import asyncio
 from tqdm import tqdm
@@ -129,6 +130,8 @@ async def __get_chat_history_count(cl: Client, chat_id: int):
 
 async def chat_command_func(cl: Client, msg: Message):
     await msg.delete()
+
+    start_time = time.time()
 
     try:
         mode = int(msg.text.split(" ")[1])
@@ -347,7 +350,7 @@ async def chat_command_func(cl: Client, msg: Message):
                         s += f"{tab}{' '.join(k.name.lower().split('_'))}: {v}\n"
         return s
 
-    await cl.send_message(msg.chat.id, pretty(data).strip())
+    await cl.send_message(msg.chat.id, pretty(data).strip() + f"\n\nTime to count: {time.time() - start_time:.2f} s")
 
 
 for a in apps:
